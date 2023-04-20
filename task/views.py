@@ -1,24 +1,23 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from rest_framework import status
-from rest_framework.decorators import api_view
+from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import render
+from rest_framework import status, mixins, generics, viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Persona
-from .serializers import PersonaSerializer
+from rest_framework import status
+from .models import Persona, Tarea
+from .serializers import PersonaSerializer, TareaSerializer
 
 
-@api_view(['GET', 'POST'])
-def persona_list(request):
-    """
-    List all code personas, or create a new persona.
-    """
-    if request.method == 'GET':
+
+class PersonaList(APIView):
+   
+    def get(self, request, format=None):
         personas = Persona.objects.all()
         serializer = PersonaSerializer(personas, many=True)
         return Response(serializer.data)
 
-    elif request.method == 'POST':
+    def post(self, request, format=None):
         serializer = PersonaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -26,73 +25,86 @@ def persona_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def persona_detail(request, pk):
-    """
-    Retrieve, update or delete a code Persona.
-    """
-    try:
-        persona = Persona.objects.get(pk=pk)
-    except Persona.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+class PersonaDetail(APIView):
+    
+    def get_object(self, id):
+        try:
+            return Persona.objects.get(id=id)
+        except Persona.DoesNotExist:
+            raise Http404
 
-    if request.method == 'GET':
+    def get(self, request, id, format=None):
+        persona = self.get_object(id)
         serializer = PersonaSerializer(persona)
         return Response(serializer.data)
 
-    elif request.method == 'PUT':
+    def put(self, request, id, format=None):
+        persona = self.get_object(id)
         serializer = PersonaSerializer(persona, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
+    def delete(self, request, id, format=None):
+        persona = self.get_object(id)
         persona.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-'''
-@csrf_exempt
-def persona_list(request):
     
-    if request.method == 'GET':
-        personas = Persona.objects.all()
-        serializer = PersonaSerializer(personas, many=True)
-        return JsonResponse(serializer.data, safe=False)
 
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = PersonaSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+class PersonaFiltros(generics.ListAPIView):
+
+    queryset = Persona.objects.all()
+    serializer_class = PersonaSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['documento']
 
 
-
-@csrf_exempt
-def persona_detail(request, pk):
-    """
-    Retrieve, update or delete a code persona.
-    """
-    try:
-        persona = Persona.objects.get(pk=pk)
-    except Persona.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'GET':
-        serializer = PersonaSerializer(persona)
-        return JsonResponse(serializer.data)
-
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = PersonaSerializer(persona, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        persona.delete()
-        return HttpResponse(status=204)
+'''def persona_filtro(request):
+    f = PersonaFilter(request.GET, queryset=Persona.objects.all())
+    return render(request, 'my_app/template.html', {'filter': f})
+    
 '''
+
+class TareaList(APIView):
+   
+    def get(self, request, format=None):
+        tareas = Tarea.objects.all()
+        serializer = TareaSerializer(tareas, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = TareaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TareaDetail(APIView):
+    
+    def get_object(self, id):
+        try:
+            return Tarea.objects.get(id=id)
+        except Tarea.DoesNotExist:
+            raise Http404
+
+    def get(self, request, id, format=None):
+        tarea = self.get_object(id)
+        serializer = TareaSerializer(tarea)
+        return Response(serializer.data)
+
+    def put(self, request, id, format=None):
+        tarea = self.get_object(id)
+        serializer = TareaSerializer(tarea, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id, format=None):
+        tarea = self.get_object(id)
+        tarea.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
