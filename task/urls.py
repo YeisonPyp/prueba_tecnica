@@ -10,6 +10,7 @@ urlpatterns = [
     path('tarea/<int:id>/', views.TareaDetail.as_view()),
     path('persona/f/', views.PersonaFiltros.as_view()),
     path('tarea_filtro_fecha/', views.TareasFiltroFecha.as_view()),
+    path('tarea_filtro_persona/', views.TareaFiltroPersona.as_view()),
 
 ]
 
