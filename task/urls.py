@@ -1,11 +1,7 @@
-from rest_framework import routers
-from .api import PersonaViewSet, TareaViewSet
+from django.urls import path
+from task import views
 
-router = routers.DefaultRouter()
-
-router.register('api/task/persona', PersonaViewSet, 'persona')
-router.register('api/task/tarea', TareaViewSet, 'tarea')
-
-urlpatterns = router.urls
-
-#urlpatterns = []
+urlpatterns = [
+    path('persona/', views.persona_list),
+    path('persona/<int:pk>/', views.persona_detail),
+]
