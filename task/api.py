@@ -1,6 +1,6 @@
 from .models import Persona, Tarea
 from rest_framework import viewsets, permissions
-from .serializers import PersonaSerializer
+from .serializers import PersonaSerializer, TareaSerializer
 
 
 class PersonaViewSet (viewsets.ModelViewSet):
@@ -12,4 +12,4 @@ class PersonaViewSet (viewsets.ModelViewSet):
 class TareaViewSet (viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
     permissions_classes = [permissions.AllowAny]
-    serializer_class = PersonaSerializer
+    serializer_class = TareaSerializer

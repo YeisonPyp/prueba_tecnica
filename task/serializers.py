@@ -8,7 +8,7 @@ class PersonaSerializer(serializers.ModelSerializer):
         fields = ('id', 'documento', 'nombre', 'apellido', 'celular', 'fechanacimiento')
 
 
-class Tarea(serializers.ModelSerializer):
+class TareaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tarea
