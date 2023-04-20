@@ -2,15 +2,13 @@ from django_filters import rest_framework as filters
 from .models import Persona, Tarea
 
 
-class PersonaFilter(filters.FilterSet):
+class TareaFilter(filters.FilterSet):
 
-    documentop = filters.CharFilter(method='documento_filter')
+    fecha_min = filters.DateFilter(field_name='fechalimite', lookup_expr='gte', label='fecha_min')
+
+    fecha_max = filters.DateFilter(field_name='fechalimite', lookup_expr='lte', label='fecha_max')
+    fecha = filters.DateFromToRangeFilter(field_name='fechalimite')
 
     class Meta:
-        model = Persona
-        fields = ['documento']
-
-    def documento_filter(self, queryset, documento, value):
-        return queryset.filter(**{
-            documento: value,
-        })
+        model = Tarea
+        fields = ['fechalimite']

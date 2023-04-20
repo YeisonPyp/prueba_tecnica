@@ -13,3 +13,10 @@ class TareaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tarea
         fields = ('id', 'persona', 'titulo', 'descripcion','fechalimite')
+
+
+class TareaFiltroSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tarea
+        fields = ('id', 'persona', 'titulo', 'descripcion','fechalimite')

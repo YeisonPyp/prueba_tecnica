@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Persona, Tarea
-from .serializers import PersonaSerializer, TareaSerializer
+from .serializers import PersonaSerializer, TareaSerializer, TareaFiltroSerializer
+from .filters import TareaFilter
 
 
 
@@ -60,12 +61,6 @@ class PersonaFiltros(generics.ListAPIView):
     filterset_fields = ['documento']
 
 
-'''def persona_filtro(request):
-    f = PersonaFilter(request.GET, queryset=Persona.objects.all())
-    return render(request, 'my_app/template.html', {'filter': f})
-    
-'''
-
 class TareaList(APIView):
    
     def get(self, request, format=None):
@@ -108,3 +103,20 @@ class TareaDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
+class TareasFiltroFecha(generics.ListAPIView):
+
+    serializer_class = TareaFiltroSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TareaFilter
+
+    def get_queryset(self):
+        queryset = Tarea.objects.all()
+        return queryset
+
+
+class TareaFiltroPersona(generics.ListAPIView):
+
+    queryset = Tarea.objects.all()
+    serializer_class = TareaSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['persona']
